@@ -11,7 +11,19 @@ class ExpoFileDriver implements ExpoRepository
      *
      * @var string
      */
-    private $storage = __DIR__.'/../../storage/tokens.json';
+    private $storage = '~/storage/tokens.json';
+
+    public function __construct()
+    {
+        $processUser = posix_getpwuid(posix_geteuid());
+        $whoAmI = $processUser['name'];
+        $this->directory = "/tmp/{$whoAmI}/storage";
+        $this->storage = $this->directory."/tokens.json";
+        if (!file_exists($this->directory)) {
+            mkdir($this->directory, 0755, true);
+        }
+    }
+
 
     /**
      * Stores an Expo token with a given identifier
